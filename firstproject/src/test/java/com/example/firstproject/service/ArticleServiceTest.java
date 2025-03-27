@@ -115,7 +115,7 @@ class ArticleServiceTest {
         String title = "가나다라";
         String content = "1234";
         ArticleForm dto = new ArticleForm(id, title, content);
-        Article expected = new Article(id, title, content);
+        Article expected = null;
         //2. Actual Data
         Article article = articleService.update(id, dto);
         //3. Comparison and Verification
@@ -128,17 +128,24 @@ class ArticleServiceTest {
 
         //1. Expected Data
         Long id = 1L;
-
+        Article expected = new Article(id, "가가가가", "1111");
         //2. Actual Data
+        Article article = articleService.delete(id);
+
         //3. Comparison and Verification
+        assertEquals(expected.toString(), article.toString());
     }
     @Test
     @Transactional
     void delete_failure_not_exist_id_input() {
 
         //1. Expected Data
+        Long id = -1L;
+        Article expected = null;
         //2. Actual Data
+        Article article = articleService.delete(id);
         //3. Comparison and Verification
+        assertEquals(expected, article);
     }
 
 }
