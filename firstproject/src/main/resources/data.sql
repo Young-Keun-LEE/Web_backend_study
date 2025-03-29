@@ -25,3 +25,4 @@ INSERT INTO comment(article_id, nickname, body) VALUES(5, 'Choi', 'Pork Cutlet')
 INSERT INTO comment(article_id, nickname, body) VALUES(6, 'Park', 'Workout');
 INSERT INTO comment(article_id, nickname, body) VALUES(6, 'Kim', 'Watching Youtube');
 INSERT INTO comment(article_id, nickname, body) VALUES(6, 'Choi', 'Reading a book');
+

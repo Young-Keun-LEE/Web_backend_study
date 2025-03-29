@@ -1,0 +1,43 @@
+
+<div class="card m-2" id="comment-new">
+    <div class="card-body">
+        <form>
+            <div class="mb-3">
+                <label class="form-label">Nickname</label>
+                <input type="text" class="form-control" id="new-comment-nickname">
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Comment</label>
+                <textarea type="text" class="form-control" rows="3" id="new-comment-body"></textarea>
+            </div>
+            {{#article}}
+                <input type="hidden" id="new-comment-article-id" value="{{id}}">
+            {{/article}}
+            <button type="button" class="btn btn-primary" id="comment-create-btn">Save the comment</button>
+        </form>
+    </div>
+</div>
+
+<script>
+          const commentCreateBtn = document.querySelector("#comment-create-btn");
+          commentCreateBtn.addEventListener("click", function(){
+              const comment = {
+                nickname: document.querySelector("#new-comment-nickname").value,
+                body: document.querySelector("#new-comment-body").value,
+                articleId: document.querySelector("#new-comment-article-id").value
+              };
+              console.log(comment);
+              const url = "/api/articles/" + comment.articleId + "/comments";
+              fetch(url, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(comment)
+          }).then(response => {
+          const msg = (response.ok)? "Comment enrolled successfully" : "Fail to enroll comment..!";
+          alert(msg);
+          window.location.reload();
+           });
+    });
+</script>

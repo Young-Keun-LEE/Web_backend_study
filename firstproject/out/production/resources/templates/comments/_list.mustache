@@ -1,0 +1,131 @@
+<div id="comments-list">
+    {{#commentDtos}}
+        <div class="card m-2" id="comments-{{id}}">
+            <div class="card-header">
+                {{nickname}}
+                <!-- Button trigger modal -->
+                <button type="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#comment-edit-modal"
+                        data-bs-id = "{{id}}"
+                        data-bs-nickname="{{nickname}}"
+                        data-bs-body="{{body}}"
+                        data-bs-article-id="{{articleId}}">
+                    Revise
+                </button>
+                <!-- comment delete button -->
+                <button type="button" class="btn btn-sm btn-outline-danger comment-delete-btn" data-comment-id = "{{id}}"> Delete</button>
+            </div>
+            <div class="card-body">
+                {{body}}
+            </div>
+        </div>
+    {{/commentDtos}}
+</div>
+<!-- Modal -->
+<div class="modal fade" id="comment-edit-modal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Revise comment</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Form to revise comment-->
+                <form>
+                    <div class="mb-3">
+                        <label class="form-label">Nickname</label>
+                        <input type="text" class="form-control" id="edit-comment-nickname">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Comment</label>
+                        <textarea type="text" class="form-control" rows="3" id="edit-comment-body"></textarea>
+                    </div>
+
+                        <input type="hidden" id="edit-comment-id">
+                        <input type="hidden" id="edit-comment-article-id">
+
+                    <button type="button" class="btn btn-primary" id="comment-update-btn">Revise the comment</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Process modal event-->
+<script>
+    {
+    // Select modal element
+    const commentEditModal = document.querySelector("#comment-edit-modal");
+    // Detect modal event
+    commentEditModal.addEventListener("show.bs.modal", function(event){
+        //1. Select trigger button
+        const triggerBtn = event.relatedTarget;
+        //2. Retrieve data
+        const id = triggerBtn.getAttribute("data-bs-id");
+        const nickname = triggerBtn.getAttribute("data-bs-nickname");
+        const body = triggerBtn.getAttribute("data-bs-body");
+        const articleId = triggerBtn.getAttribute("data-bs-article-id");
+        //3. Update data on revised form
+        document.querySelector("#edit-comment-nickname").value = nickname;
+        document.querySelector("#edit-comment-body").value = body;
+        document.querySelector("#edit-comment-id").value = id;
+        document.querySelector("#edit-comment-article-id").value = articleId;
+
+    });
+    }
+    {
+        //Select revise button
+        const commentUpdateBtn = document.querySelector("#comment-update-btn");
+        commentUpdateBtn.addEventListener("click", function(){
+        //Make revised comment object
+        const comment = {
+            id: document.querySelector("#edit-comment-id").value,
+            nickname: document.querySelector("#edit-comment-nickname").value,
+            body: document.querySelector("#edit-comment-body").value,
+            article_id: document.querySelector("#edit-comment-article-id").value
+
+        };
+        console.log(comment)
+        //Revise REST API call
+        const url = "/api/comments/" + comment.id;
+        fetch(url, {
+            method: "PATCH",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(comment)
+        }).then(response => {
+        // Print message according to HTTP response code
+        const msg = (response.ok)? "Comment is revised successfully." : "Fail to revise comment..!";
+        alert(msg);
+        window.location.reload();
+    });
+    });
+    }
+</script>
+<!-- Delete comment -->
+<script>
+    {
+    // Select delete button
+    const commentDeleteBtns = document.querySelectorAll(".comment-delete-btn");
+    // Process delete button event
+    commentDeleteBtns.forEach(btn =>{
+        btn.addEventListener("click", (event) => {
+            const commentDeleteBtn = event.target;
+            const commentId = commentDeleteBtn.getAttribute("data-comment-id");
+            console.log(`Delete button was clicked: number ${commentId} comment`);
+            //Call delete REST API
+            const url = `/api/comments/${commentId}`;
+            fetch(url, {
+                method: "DELETE"
+            }).then(response => {
+                if(!response.ok){
+                    alert("Fail to delete comment..!")
+                    return;
+                }
+                const msg = ` Number ${commentId} comment is deleted.`;
+                alert(msg);
+                window.location.reload();
+            })
+        });
+    });
+    }
+</script>
